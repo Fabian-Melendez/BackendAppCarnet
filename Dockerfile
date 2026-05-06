@@ -6,7 +6,7 @@ COPY . .
 
 RUN apk add --no-cache maven
 
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests=true
 
 EXPOSE 8080
 
