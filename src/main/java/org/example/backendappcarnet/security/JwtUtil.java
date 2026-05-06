@@ -10,7 +10,10 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    // 🔥 CLAVE FIJA (IMPORTANTE)
+    private final Key key = Keys.hmacShaKeyFor(
+            "mi_clave_super_secreta_muy_larga_1234567890".getBytes()
+    );
 
     private final long EXPIRATION = 1000 * 60 * 60; // 1 hora
 
@@ -33,20 +36,12 @@ public class JwtUtil {
                 .getSubject();
     }
 
-    public String extraerRol(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("rol", String.class);
-    }
-
     public boolean validarToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
+            System.out.println("TOKEN INVALIDO: " + e.getMessage());
             return false;
         }
     }

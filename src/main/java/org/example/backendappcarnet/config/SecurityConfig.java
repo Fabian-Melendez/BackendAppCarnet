@@ -50,7 +50,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                // 🚫 Desactivar login por defecto de Spring
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
 

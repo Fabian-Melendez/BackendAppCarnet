@@ -27,7 +27,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        // 🚫 Rutas públicas
         if (path.startsWith("/api/auth") ||
                 path.startsWith("/v3/api-docs") ||
                 path.startsWith("/swagger-ui")) {
@@ -38,46 +37,30 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
 
-        System.out.println("HEADER: " + header);
+        if (header != null && header.startsWith("Bearer ")) {
 
-        // ❌ sin token → sigue flujo normal (Spring decide después)
-        if (header == null || !header.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+            String token = header.substring(7);
 
-        String token = header.substring(7);
+            if (jwtUtil.validarToken(token)) {
 
-        try {
+                String correo = jwtUtil.extraerCorreo(token);
 
-            // ❌ token inválido → limpiar contexto y salir
-            if (!jwtUtil.validarToken(token)) {
-                SecurityContextHolder.clearContext();
-                filterChain.doFilter(request, response);
-                return;
+                if (correo != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(correo);
+
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
+
+                    auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
             }
-
-            String correo = jwtUtil.extraerCorreo(token);
-
-            if (correo != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-                UserDetails userDetails = userDetailsService.loadUserByUsername(correo);
-
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
-
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            }
-
-        } catch (Exception e) {
-            SecurityContextHolder.clearContext();
-            System.out.println("JWT ERROR: " + e.getMessage());
         }
 
         filterChain.doFilter(request, response);
