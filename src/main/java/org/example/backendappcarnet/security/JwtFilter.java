@@ -27,9 +27,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
+        // 🚫 Rutas públicas
         if (path.startsWith("/api/auth") ||
                 path.startsWith("/v3/api-docs") ||
                 path.startsWith("/swagger-ui")) {
+
             filterChain.doFilter(request, response);
             return;
         }
@@ -38,6 +40,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         System.out.println("HEADER: " + header);
 
+        // ❌ sin token → sigue flujo normal (Spring decide después)
         if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -46,7 +49,10 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = header.substring(7);
 
         try {
+
+            // ❌ token inválido → limpiar contexto y salir
             if (!jwtUtil.validarToken(token)) {
+                SecurityContextHolder.clearContext();
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -69,7 +75,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
 
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            SecurityContextHolder.clearContext();
+            System.out.println("JWT ERROR: " + e.getMessage());
         }
 
         filterChain.doFilter(request, response);
