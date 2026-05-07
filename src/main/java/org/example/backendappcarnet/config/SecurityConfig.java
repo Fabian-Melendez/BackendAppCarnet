@@ -32,7 +32,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
 
-                // 🔥 JWT = sin sesiones
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -43,9 +42,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // 🔓 BUSCAR ESTUDIANTE POR CORREO
-                        .requestMatchers(HttpMethod.GET,
-                                "/api/estudiantes/buscar/{correo}").permitAll()
+                        // 🔓 BUSCAR POR CORREO
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/estudiantes/buscar/*"
+                        ).permitAll()
 
                         // 🔓 SWAGGER
                         .requestMatchers(
@@ -53,6 +54,12 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
+
+                        // 👑 ADMIN Y ESTUDIANTE
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/estudiantes/*"
+                        ).hasAnyRole("ADMIN", "ESTUDIANTE")
 
                         // 👑 SOLO ADMIN
                         .requestMatchers("/api/estudiantes/**")
