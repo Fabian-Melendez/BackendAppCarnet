@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
 
+                // JWT = sin sesiones
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -45,7 +46,7 @@ public class SecurityConfig {
                         // 🔓 BUSCAR POR CORREO
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/estudiantes/buscar/*"
+                                "/api/estudiantes/buscar-correo"
                         ).permitAll()
 
                         // 🔓 SWAGGER
@@ -75,8 +76,10 @@ public class SecurityConfig {
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
 
-                .addFilterBefore(jwtFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(
+                        jwtFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
         return http.build();
     }

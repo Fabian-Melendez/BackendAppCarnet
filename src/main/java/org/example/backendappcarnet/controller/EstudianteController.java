@@ -20,42 +20,66 @@ public class EstudianteController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/crear")
     public ResponseEntity<Estudiante> crear(@RequestBody Estudiante estudiante) {
-        return ResponseEntity.ok(estudianteService.crearEstudiante(estudiante));
+        return ResponseEntity.ok(
+                estudianteService.crearEstudiante(estudiante)
+        );
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/listar")
     public ResponseEntity<List<Estudiante>> listar() {
-        return ResponseEntity.ok(estudianteService.listarEstudiantes());
+        return ResponseEntity.ok(
+                estudianteService.listarEstudiantes()
+        );
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/{id}")
     public ResponseEntity<Estudiante> obtener(@PathVariable Long id) {
-        return ResponseEntity.ok(estudianteService.obtenerPorId(id));
+        return ResponseEntity.ok(
+                estudianteService.obtenerPorId(id)
+        );
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/editar/{id}")
-    public ResponseEntity<Estudiante> actualizar(@PathVariable Long id,
-                                                 @RequestBody Estudiante estudiante) {
-        return ResponseEntity.ok(estudianteService.actualizarEstudiante(id, estudiante));
+    public ResponseEntity<Estudiante> actualizar(
+            @PathVariable Long id,
+            @RequestBody Estudiante estudiante
+    ) {
+        return ResponseEntity.ok(
+                estudianteService.actualizarEstudiante(id, estudiante)
+        );
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<String> eliminar(@PathVariable Long id) {
+
         estudianteService.eliminarEstudiante(id);
-        return ResponseEntity.ok("Estudiante eliminado correctamente");
+
+        return ResponseEntity.ok(
+                "Estudiante eliminado correctamente"
+        );
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar")
-    public ResponseEntity<List<Estudiante>> buscar(@RequestParam String nombre) {
-        return ResponseEntity.ok(estudianteService.buscarPorNombre(nombre));
+    public ResponseEntity<List<Estudiante>> buscar(
+            @RequestParam String nombre
+    ) {
+        return ResponseEntity.ok(
+                estudianteService.buscarPorNombre(nombre)
+        );
     }
-    @GetMapping("/buscar/{correo}")
-    public ResponseEntity<Estudiante> buscarPorCorreo(@RequestParam String correo) {
-        return ResponseEntity.ok(estudianteService.buscarPorCorreo(correo));
+
+    // 🔓 LOGIN / BÚSQUEDA POR CORREO
+    @GetMapping("/buscar-correo")
+    public ResponseEntity<Estudiante> buscarPorCorreo(
+            @RequestParam String correo
+    ) {
+        return ResponseEntity.ok(
+                estudianteService.buscarPorCorreo(correo)
+        );
     }
 }
