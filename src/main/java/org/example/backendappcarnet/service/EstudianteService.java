@@ -17,4 +17,6 @@ public interface EstudianteService {
     void eliminarEstudiante(Long id);
 
     List<Estudiante> buscarPorNombre(String nombre);
+
+    Estudiante buscarPorCorreo(String correo);
 }

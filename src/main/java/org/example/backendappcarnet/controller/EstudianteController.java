@@ -54,4 +54,8 @@ public class EstudianteController {
     public ResponseEntity<List<Estudiante>> buscar(@RequestParam String nombre) {
         return ResponseEntity.ok(estudianteService.buscarPorNombre(nombre));
     }
+    @GetMapping("/buscar/{correo}")
+    public ResponseEntity<Estudiante> buscarPorCorreo(@RequestParam String correo) {
+        return ResponseEntity.ok(estudianteService.buscarPorCorreo(correo));
+    }
 }

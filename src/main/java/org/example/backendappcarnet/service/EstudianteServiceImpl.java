@@ -83,6 +83,12 @@ public class EstudianteServiceImpl implements EstudianteService {
     }
 
     @Override
+    public Estudiante buscarPorCorreo(String correo) {
+        return estudianteRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+    }
+
+    @Override
     public void eliminarEstudiante(Long id) {
 
         if (!estudianteRepository.existsById(id)) {
